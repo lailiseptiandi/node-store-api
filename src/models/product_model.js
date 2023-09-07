@@ -7,5 +7,4 @@ pool.on('error',(err)=> {
 });
 
 module.exports = {
-    // GetProduct()
 }
