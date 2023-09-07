@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-const appRoute = require('./src/routes/router_api');
+const appRoute = require('./src/routes/api.router');
 app.use('/api/v1', appRoute);
 
 app.get('/', (req, res)=> {

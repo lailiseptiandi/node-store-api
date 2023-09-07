@@ -1,4 +1,4 @@
-const config = require('../configs/database');
+const config = require('../config/db.config');
 const mysql = require('mysql');
 const { sendSuccessResponse, sendErrorResponse} = require('../helpers/helper');
 const pool = mysql.createPool(config)
