@@ -23,7 +23,7 @@ function createProduct(req, res){
     if (error) {
         sendErrorResponse(res, error.details[0].message);
         return;
-        }
+    }
    
     let data = {
         name : req.body.name,
@@ -44,17 +44,25 @@ function getProductByID(req, res){
 }
 
 function  updateProduct(req, res){
-    let id = req.body.id;
+    const { error } = productRequiredField.validate(req.body);
+    let date = new Date();
+
+    if (error) {
+        sendErrorResponse(res, error.details[0].message);
+        return;
+    }
+    let id = req.params.id;
     let data = {
-    name : req.body.name,
-    description : req.body.description,
-    image : req.body.image,
-    price : req.body.price,
-    quantity : req.body.quantity,
+        name : req.body.name,
+        description : req.body.description,
+        image : req.body.image,
+        price : req.body.price,
+        quantity : req.body.quantity,
+        updated_at: date,
 
     }
 
-    model.productModel.updateProduct(res, data)
+    model.productModel.updateProduct(res, data, id)
 }
 
 function deleteProduct(req, res){
