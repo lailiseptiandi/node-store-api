@@ -1,7 +1,15 @@
+const dotenv = require("dotenv");
+const mysql = require('mysql');
+dotenv.config();
+
+const dbConfig = {
+    multipleStatements: true,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+};
+
 module.exports = {
-    multipleStatements  : true,
-    host                : 'localhost',
-    user                : 'root',
-    password            : '',
-    database            : 'nodev_store_api'
-}
+    dbConfig
+};
