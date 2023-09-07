@@ -49,7 +49,7 @@ function updateProduct(res, data, id){
     let sql = `UPDATE products SET ? WHERE id = ?;`
         connection.query(sql,[data, id], function(error, results){
             if(error) throw sendErrorResponse(error, "failed updated product");
-            sendSuccessResponse(res, "success updated product", results)
+            sendSuccessResponse(res, "success updated product")
         });
     });
 }
