@@ -15,7 +15,7 @@ const appRoute = require('./src/routes/router_api');
 app.use('/api/v1', appRoute);
 
 app.get('/', (req, res)=> {
-    return "LEARN API STORE USING NODE JS";
+    res.redirect('https://www.google.com')
 })
 app.listen(port, () => {
     console.log('Server Started at host http://'+host+':'+port);
