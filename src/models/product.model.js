@@ -43,13 +43,13 @@ function getProductByID(res, id){
     });
 }
 
-function updateProduct(res, data){
+function updateProduct(res, data, id){
     pool.getConnection(function(err, connection){
     if(err) throw err;
     let sql = `UPDATE products SET ? WHERE id = ?;`
         connection.query(sql,[data, id], function(error, results){
             if(error) throw sendErrorResponse(error, "failed updated product");
-            sendSuccessResponse(res, "success updated product")
+            sendSuccessResponse(res, "success updated product", results)
         });
     });
 }
