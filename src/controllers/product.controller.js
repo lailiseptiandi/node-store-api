@@ -1,36 +1,21 @@
-const config = require('../config/db.config');
-const mysql = require('mysql');
-const { sendSuccessResponse, sendErrorResponse} = require('../helpers/helper');
-const pool = mysql.createPool(config)
-const Joi = require('joi');
-
-pool.on('error',(err)=> {
-    console.error(err);
-});
+const validator = require('joi');
+const model = require('../models')
 
 
-const productRequiredField = Joi.object({
-    name: Joi.string().required(),
-    description: Joi.string().required(),
-    price: Joi.number().min(0).required(),
-    quantity: Joi.number().min(0).required(),
-    image: Joi.string().allow('').optional()
+const productRequiredField = validator.object({
+    name: validator.string().required(),
+    description: validator.string().required(),
+    price: validator.number().min(0).required(),
+    quantity: validator.number().min(0).required(),
+    image: validator.string().allow('').optional()
 });
 
 
 function getProduct(req, res){
-  pool.getConnection(function(err, connection) {
-        if(err) throw err;
-        let sql = `SELECT * FROM products;`
-        connection.query(sql, function(error, results){
-            if(error) throw error;
-            sendSuccessResponse(res, 'success get data product', results);
-        });
-        connection.release();
-    });
+    model.productModel.getProduct(res)
 }
 
-function  createProduct(req, res){
+function createProduct(req, res){
 
     const { error } = productRequiredField.validate(req.body);
     let date = new Date();
@@ -49,66 +34,32 @@ function  createProduct(req, res){
         created_at: date,
         updated_at: date,
     }
-    pool.getConnection(function(err, connection) {
-        if(err) throw err;
-        let sql = `INSERT INTO products SET ?;`
-        connection.query(sql,[data], function(error, results){
-            if(error) throw sendErrorResponse(res, error);
-            sendSuccessResponse(res, 'success created product', null);
-        });
-        connection.release();
-    })
+    model.productModel.createProduct(res,data)
 }
 
 function getProductByID(req, res){
     let id = req.params.id;
 
-    pool.getConnection(function(err, connection){
-        if(err) throw err;
-        let sql = `SELECT * FROM products WHERE id = ?;`
-        connection.query(sql, [id], function(error, results){
-            if(error) throw sendErrorResponse(error, "failed get detail product");
-            
-            sendSuccessResponse(res, "success get detail product", results)
-        });
-    });
+    model.productModel.getProductByID(res, id)
 }
 
 function  updateProduct(req, res){
-        let id = req.body.id;
-        let data = {
-        name : req.body.name,
-        description : req.body.description,
-        image : req.body.image,
-        price : req.body.price,
-        quantity : req.body.quantity,
+    let id = req.body.id;
+    let data = {
+    name : req.body.name,
+    description : req.body.description,
+    image : req.body.image,
+    price : req.body.price,
+    quantity : req.body.quantity,
 
-        }
+    }
 
-    pool.getConnection(function(err, connection){
-        if(err) throw err;
-        let sql = `UPDATE products SET ? WHERE id = ?;`
-        connection.query(sql,[data, id], function(error, results){
-            if(error) throw error;
-            res.send({
-                success: true,
-                message: 'success updated product',
-            });
-        });
-    });
+    model.productModel.updateProduct(res, data)
 }
 
 function deleteProduct(req, res){
     let id = req.params.id;
-
-    pool.getConnection(function(err, connection){
-        if(err)throw err;
-        let sql = `DELETE FROM products WHERE id = ?;`
-        connection.query(sql,[id], function(error, results){
-            if(error) throw error;
-            sendSuccessResponse(res, "success deleted product")
-        })
-    })
+    model.productModel.deleteProduct(res, id)
 }
 
 module.exports ={
