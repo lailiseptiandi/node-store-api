@@ -15,13 +15,18 @@ function authMiddleware(req, res, next){
     // verify token
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if(err){
-            return sendErrorResponse(res, "Invalid Token", 401)
+            if (err.name === "TokenExpiredError") {
+                // Token has expired
+                return sendErrorResponse(res, "Token has expired", 401);
+            } else {
+                // Invalid token for other reasons
+                return sendErrorResponse(res, "Invalid Token", 401);
+            }
         }
         req.user = decoded;
         next();
     });
 }
-
 
 
 module.exports = authMiddleware;
