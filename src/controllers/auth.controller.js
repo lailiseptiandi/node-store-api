@@ -8,6 +8,7 @@ const userRequiredField = validator.object({
     name: validator.string().required(),
     email: validator.string().email().required(),
     password: validator.string().min(8).required(),
+    role: validator.string()
 });
 
 function registerUser(req, res){
@@ -24,6 +25,7 @@ function registerUser(req, res){
         name : req.body.name,
         email : req.body.email,
         password: bcrypt.hashSync(req.body.password, 8),
+        role: req.body.role,
         created_at: date,
         updated_at: date,
     }
@@ -33,7 +35,7 @@ function registerUser(req, res){
             // Handle the error here
            return  sendErrorResponse(res, err);
         } else {
-            const token = jwt.sign({user_id: user.id, email: user.email, name: user.name },
+            const token = jwt.sign({user_id: user.id, email: user.email, name: user.name, user:user.role, },
                 process.env.JWT_SECRET, {
                 expiresIn: process.env.JWT_EXPIRED_TIME * 60, 
             });
@@ -41,6 +43,7 @@ function registerUser(req, res){
               const userData = {
                 id : user.id,
                 email : user.email,
+                role : user.role,
                 type : "Bearer",
                 access_token : token
             }
