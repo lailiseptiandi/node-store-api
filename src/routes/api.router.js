@@ -1,12 +1,17 @@
 require('express-router-group');
-const router = require('express').Router();
+const express = require('express').Router();
 const { ProductController, AuthController } = require('../controllers');
+const authMiddleware = require("../middleware/auth")
 
-router.get('/product', ProductController.getProduct);
-router.post('/product', ProductController.createProduct);
-router.get('/product/:id', ProductController.getProductByID);
-router.put('/product/:id', ProductController.updateProduct);
-router.delete('/product/:id', ProductController.deleteProduct);
+const router = express;
+
+const productRouter = express;
+productRouter.use(authMiddleware)
+productRouter.get('/product', ProductController.getProduct);
+productRouter.post('/product', ProductController.createProduct);
+productRouter.get('/product/:id', ProductController.getProductByID);
+productRouter.put('/product/:id', ProductController.updateProduct);
+productRouter.delete('/product/:id', ProductController.deleteProduct);
 
 // user
 router.post('/register', AuthController.registerUser)
