@@ -9,14 +9,14 @@ pool.on('error',(err)=> {
 
 function getProduct(res){
     pool.getConnection(function(err, connection) {
-    if(err) throw err;
-    let sql = `SELECT * FROM products;`
-    connection.query(sql, function(error, results){
-        if(error) throw error;
-        sendSuccessResponse(res, 'success get data product', results);
+        if(err) throw err;
+        let sql = `SELECT * FROM products;`
+        connection.query(sql, function(error, results){
+            if(error) throw error;
+            sendSuccessResponse(res, 'success get data product', results);
+        });
+        connection.release();
     });
-    connection.release();
-});
 }
 
 function createProduct(res, data){
@@ -40,6 +40,7 @@ function getProductByID(res, id){
             
             sendSuccessResponse(res, "success get detail product", results)
         });
+        connection.release();
     });
 }
 
@@ -51,6 +52,7 @@ function updateProduct(res, data, id){
             if(error) throw sendErrorResponse(error, "failed updated product");
             sendSuccessResponse(res, "success updated product")
         });
+        connection.release();
     });
 }
 function deleteProduct(res, id){
@@ -60,7 +62,9 @@ function deleteProduct(res, id){
         connection.query(sql,[id], function(error, results){
             if(error) throw sendErrorResponse(error, "failed deleted product");
             sendSuccessResponse(res, "success deleted product")
-        })
+        });
+        connection.release();
+
     })
 }
 
