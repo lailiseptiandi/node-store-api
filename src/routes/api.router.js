@@ -8,6 +8,8 @@ const router = express;
 router.post('/register', AuthController.registerUser)
 router.post('/login', AuthController.login)
 
+router.get('/profile',authMiddleware, AuthController.profilUser);
+
 // product
 const productRouter = express;
 productRouter.use(authMiddleware)

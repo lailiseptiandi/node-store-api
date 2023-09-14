@@ -101,8 +101,21 @@ function login(req, res){
 }
 
 function profilUser(req, res){
-  
-  return sendSuccessResponse(res, "Profile user succesfully", null)
+  const stringToken = req.headers['authorization'];
+     // get token Bearer tokenString 
+  const token = stringToken.split(" ")[1]
+
+  const decodedToken = jwt.verify(token,process.env.JWT_SECRET );
+
+  model.userModel.findUserByEmail(decodedToken.email, function(err, user) {
+    const userData = {
+      id : user.id,
+      email: user.email,
+      role : user.role
+    }
+    return sendSuccessResponse(res, "Profile user succesfully", userData);
+  });
+ 
 }
 
 module.exports = {
