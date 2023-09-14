@@ -11,6 +11,11 @@ const userRequiredField = validator.object({
     role: validator.string()
 });
 
+const userLoginRequiredField = validator.object({
+    email: validator.string().email().required(),
+    password: validator.string().min(8).required(),
+});
+
 function registerUser(req, res){
 
     const { error } = userRequiredField.validate(req.body);
@@ -55,6 +60,12 @@ function registerUser(req, res){
 
 function login(req, res){
 
+  const { error } = userLoginRequiredField.validate(req.body);
+
+  if (error) {
+      sendErrorResponse(res, error.details[0].message);
+      return;
+  }
   const { email, password } = req.body;
 
   // Find user by email
@@ -89,7 +100,13 @@ function login(req, res){
   });
 }
 
+function profilUser(req, res){
+  
+  return sendSuccessResponse(res, "Profile user succesfully", null)
+}
+
 module.exports = {
     registerUser,
     login,
+    profilUser,
 }
