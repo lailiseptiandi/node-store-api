@@ -8,6 +8,12 @@ const userRequiredField = validator.object({
     name: validator.string().required(),
     email: validator.string().email().required(),
     password: validator.string().min(8).required(),
+    role: validator.string()
+});
+
+const userLoginRequiredField = validator.object({
+    email: validator.string().email().required(),
+    password: validator.string().min(8).required(),
 });
 
 function registerUser(req, res){
@@ -24,6 +30,7 @@ function registerUser(req, res){
         name : req.body.name,
         email : req.body.email,
         password: bcrypt.hashSync(req.body.password, 8),
+        role: req.body.role,
         created_at: date,
         updated_at: date,
     }
@@ -33,7 +40,7 @@ function registerUser(req, res){
             // Handle the error here
            return  sendErrorResponse(res, err);
         } else {
-            const token = jwt.sign({user_id: user.id, email: user.email, name: user.name },
+            const token = jwt.sign({user_id: user.id, email: user.email, name: user.name, user:user.role, },
                 process.env.JWT_SECRET, {
                 expiresIn: process.env.JWT_EXPIRED_TIME * 60, 
             });
@@ -41,6 +48,7 @@ function registerUser(req, res){
               const userData = {
                 id : user.id,
                 email : user.email,
+                role : user.role,
                 type : "Bearer",
                 access_token : token
             }
@@ -52,6 +60,12 @@ function registerUser(req, res){
 
 function login(req, res){
 
+  const { error } = userLoginRequiredField.validate(req.body);
+
+  if (error) {
+      sendErrorResponse(res, error.details[0].message);
+      return;
+  }
   const { email, password } = req.body;
 
   // Find user by email
@@ -86,7 +100,26 @@ function login(req, res){
   });
 }
 
+function profilUser(req, res){
+  const stringToken = req.headers['authorization'];
+     // get token Bearer tokenString 
+  const token = stringToken.split(" ")[1]
+
+  const decodedToken = jwt.verify(token,process.env.JWT_SECRET );
+
+  model.userModel.findUserByEmail(decodedToken.email, function(err, user) {
+    const userData = {
+      id : user.id,
+      email: user.email,
+      role : user.role
+    }
+    return sendSuccessResponse(res, "Profile user succesfully", userData);
+  });
+ 
+}
+
 module.exports = {
     registerUser,
     login,
+    profilUser,
 }
